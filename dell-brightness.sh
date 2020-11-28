@@ -1,11 +1,10 @@
 #!/bin/bash
-XAUTHORITY=/run/user/1000/gdm/Xauthority
-DISPLAY=:0.0
+export XAUTHORITY=/run/user/1000/gdm/Xauthority
+export DISPLAY=:1
 DISPLAYNAME=$(xrandr --listmonitors | awk '$1 == "0:" {print $4}')
 
 OLED_BR=`xrandr --verbose | grep -i brightness -m 1 | cut -f2 -d ' '`
 CURR=`LC_ALL=C /usr/bin/printf "%.*f" 1 $OLED_BR`
-
 MIN=0
 MAX=1.2
 
@@ -25,7 +24,8 @@ fi
 
 # Set Intel backlight to fake value
 # to sync OSD brightness indicator to actual brightness
-INTEL_PANEL="/sys/devices/pci0000:00/0000:00:02.0/drm/card0/card0-eDP-1/intel_backlight/"
+INTEL_PANEL="/sys/class/backlight/intel_backlight"
+
 if [ -d "$INTEL_PANEL" ]; then
     PERCENT=`echo "scale=4; $VAL/$MAX" | bc -l`
     INTEL_MAX=$(cat "$INTEL_PANEL/max_brightness")
